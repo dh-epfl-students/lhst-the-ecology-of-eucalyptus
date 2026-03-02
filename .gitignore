@@ -1,0 +1,6 @@
+data/documents/*
+data/error/*
+data/tmp/*
+.venv
+*.log
+*.csv
