@@ -130,13 +130,18 @@ def result_parser(xml_result, overwrite=False):
             book_parsed['title'] = book.find("dc:title").text.strip()
 
         if book.find("dc:type"):
-            book_parsed['type'] = book.find("dc:type").text.strip()        #might be more than one, check
+            for book_type in book.find_all("dc:type"):
+                if book_type.text.strip() != "text" and book_type.text.strip() != "texte":
+                    book_parsed['type'] = book_type.text.strip()        
 
         if book.find("dc:identifier"):
             book_parsed['ark'] = book.find("dc:identifier").text.strip()[34:]   #gets all identifier, keep only ark
 
         if book.find("dc:description"):
-            book_parsed['description'] = book.find("dc:description").text.strip()  #might be more than one, check
+            description = []
+            for book_description in book.find_all("dc:description"):
+                description.append(book_description.text.strip())
+            book_parsed['description'] = "\t".join(description) 
 
         books_parsed.append(book_parsed)
     
