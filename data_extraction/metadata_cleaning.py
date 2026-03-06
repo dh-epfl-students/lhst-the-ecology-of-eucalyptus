@@ -6,12 +6,6 @@ nlp = spacy.load('fr_core_news_sm')
 name_db = pd.read_csv("data/nat2022.csv", sep=";", encoding='utf-8')
 name_db = list(set(name_db["preusuel"].str.lower().to_list()))
 
-"""
-TODO
-
-There are sometimes information about the date but not in the form of d{4} --> get it instead of 'None'
-Ex:18..
-"""
 def clean_date(unclean_date):
 
     p = re.compile(r"\d{4}")
@@ -35,6 +29,8 @@ def clean_title(unclean_title):
     cleaner_title = unclean_title.split(" / ")[0]
     cleaner_title = cleaner_title.split(" [")[0]
     cleaner_title = cleaner_title.split(", par")[0]
+
+    # Is this pertinent?
     cleaner_title = cleaner_title.split(" :")[0]
 
     return str(cleaner_title).strip()
@@ -50,12 +46,20 @@ def clean_author(unclean_author):
     if str(unclean_author) != "nan":
         cleaned_author = unclean_author.split(". Auteur")[0]
 
-        p = re.compile(r"(.+) \((\d{2,4}.{0,2})-(\d{2,4}.{0,2})\)")
+        p = re.compile(r"(.+) \((\d{0,4}.{0,4})-(\d{0,4}.{0,4})\)")
         m = re.match(p,cleaned_author)
         if m != None:
             author["author_name_clean"] = m.groups()[0]
-            author["author_birth_clean"] = m.groups()[1]
-            author["author_death_clean"] = m.groups()[2]
+
+            #Discard "unclean" dates (such as 18..)
+            clean_date_regex = re.compile(r"\d{4}")
+            birth_date = re.findall(clean_date_regex, m.groups()[1])
+            if len(birth_date) != 0:
+                author["author_birth_clean"] = birth_date[0]
+            death_date = re.findall(clean_date_regex, m.groups()[2])
+            if len(death_date) != 0:
+                author["author_death_clean"] = death_date[0]
+                
         else:
             author["author_name_clean"] = str(cleaned_author)
 
@@ -76,10 +80,9 @@ def clean_author(unclean_author):
 
     return pd.Series(author)
     
-
 def clean_publisher(unclean_publisher):
     publisher = {
-        "publisher_name_clean": "[s.n.]",
+        "publisher_name_clean": None,
         "publisher_place_clean": None
     }
 
@@ -93,8 +96,9 @@ def clean_publisher(unclean_publisher):
 
         if m != None:
             #Harmonize [s.n.] notations and write publisher name
-            if m.groups()[0].strip() != "" and m.groups()[0].strip() != "[s.n.?]" and m.groups()[0].strip() != "[s. n.]":
-                publisher["publisher_name_clean"] = m.groups()[0].strip()
+            pub_name = m.groups()[0].strip()
+            if pub_name != "" and pub_name != "[s.n.?]" and pub_name != "[s. n.]" and pub_name != "[s.n.]" and pub_name != "[s.n]":
+                publisher["publisher_name_clean"] = pub_name
             
             #No need to check for Constantinople / Istanboul (all instances say Constantinople)
             publisher["publisher_place_clean"] = m.groups()[1].strip()
@@ -113,7 +117,6 @@ def clean_type(unclean_type):
     
     if unclean_type.strip() == "manuscrit":
         return "manuscript"
-
 
 def metadata_cleaner(path):
     print("Reading csv ...")

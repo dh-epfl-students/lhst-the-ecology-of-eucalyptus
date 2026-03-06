@@ -44,9 +44,18 @@ def single_gallica_download(ark_id, altcha_pass, jsession_id):
     return "Safe"
 
 
-def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if_downloaded=True, randomize_download_order=False, time_to_wait=30):
+def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if_downloaded=True, randomize_download_order=False, filter=False, time_to_wait=15):
 
-    documents_to_download = pd.read_csv(document_data_path)["ark"].to_list()
+    df_documents = pd.read_csv(document_data_path)
+
+    #remove documents based on filter
+    if filter:
+        df_author = df_documents.dropna(subset = "author_type_clean")
+        df_publisher = df_documents.dropna(subset = "publisher_name_clean")
+        df_documents = pd.concat([df_author,df_publisher]).drop_duplicates().reset_index(drop=True)
+
+    
+    documents_to_download = df_documents["ark"].to_list()
 
     total_docs_downloaded = 0
     # remove documents already downloaded
@@ -81,7 +90,7 @@ def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if
 
 if __name__ == "__main__":
     
-    data_path = "data/document_data.csv"
-    altcha_pass = '1772450854607.cf50ab1d.rcUWELO-0bN3QUgUF534vgOv0vjXMgluFqzJZbT7t1k'
-    jsession_id = "3238669178FC0D80E762390317DC4928"
-    full_gallica_download(data_path, altcha_pass, jsession_id, randomize_download_order=True)
+    data_path = "data/document_data_clean.csv"
+    altcha_pass = '1772862876634.cf50ab1d.yx3cBSTkogrWy4N1JlSfZAVJrXLJ46KTLQP7UQvyQYs'
+    jsession_id = "3CE90735D6687D9AC95E24C5A8BF0604"
+    full_gallica_download(data_path, altcha_pass, jsession_id, randomize_download_order=True, filter=True)
