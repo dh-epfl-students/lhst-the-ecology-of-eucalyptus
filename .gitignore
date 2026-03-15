@@ -1,6 +1,8 @@
 data/documents/*
 data/error/*
 data/tmp/*
+data/corpus_txt/*
+data/corpus_eucalyptus_only/*
 .venv
 *.log
 *.csv

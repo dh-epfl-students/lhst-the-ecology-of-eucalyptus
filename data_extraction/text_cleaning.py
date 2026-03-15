@@ -9,7 +9,7 @@ def count_special_char(string):
             spec_char_counter += 1
     return spec_char_counter
 
-def clean_text(path):
+def clean_text(path, eucalyptus_only=False):
     with open(path, "r", encoding="utf-8") as f:
         xml_file = BeautifulSoup(f, "lxml")
     
@@ -25,16 +25,21 @@ def clean_text(path):
         if child.name == "hr" and keep_text == False:
             keep_text = True
 
-    #TODO: remove (vérif)
+    """ #TODO: remove (vérif)
     with open(f"data/corpus_txt/{document[:-5]}_pre.txt", "w", encoding="utf-8") as f:
         testtext = "\n\n".join(full_text)
-        f.write(testtext)
+        f.write(testtext) """
 
 
     #"Old" OCR Postprocessing
     threshold = 0.25
     list_2_char_words = ["au", "ce", "ca", "ci", "de", "du", "en", "et", "eu", "ex", "il", "in", "la", "le", "me", "ne", "ni", "nu", "oc", "or", "on", "sa", "ta", "si", "te", "tu", "un", "us", "ut", "va", "vs", "vu"] 
     for paragraph in full_text[:]:
+        #TODO: find the context better
+        if eucalyptus_only == True and "eucalypt" not in paragraph.lower():
+            full_text.remove(paragraph)
+            continue
+
         #Remove unwanted paragraphs (paragraphs with more than 20% special characters)
         if count_special_char(paragraph) / len(paragraph) > threshold:
             full_text.remove(paragraph)
@@ -47,9 +52,12 @@ def clean_text(path):
 
     full_text = "\n\n".join(full_text)
 
-    with open(f"data/corpus_txt/{document[:-5]}_post.txt", "w", encoding="utf-8") as f:
-        f.write(full_text)
-    #print(body)
+    if eucalyptus_only:
+        with open(f"data/corpus_eucalyptus_only/{document[:-5]}.txt", "w", encoding="utf-8") as f:
+            f.write(full_text)
+    else:
+        with open(f"data/corpus_txt/{document[:-5]}.txt", "w", encoding="utf-8") as f:
+            f.write(full_text)
 
 
     # Get gallica's OCR estimation
@@ -59,5 +67,5 @@ def clean_text(path):
 if __name__ == "__main__":
 
     documents_downloaded = os.listdir("data/documents")
-    for document in documents_downloaded[:2]:
-        clean_text(f"data/documents/{document}")
+    for document in documents_downloaded:
+        clean_text(f"data/documents/{document}", eucalyptus_only=True)

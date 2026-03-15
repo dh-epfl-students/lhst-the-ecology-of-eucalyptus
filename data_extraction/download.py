@@ -63,9 +63,13 @@ def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if
         documents_downloaded = os.listdir("data/documents")
         documents_downloaded = list(set([x.split('.')[0] for x in documents_downloaded]))
 
+        errors_downloaded = os.listdir("data/error")
+        errors_downloaded = list(set([x.split('.')[0] for x in errors_downloaded]))
+
         total_docs_downloaded = len(documents_downloaded)
 
         documents_to_download = list(set(documents_to_download) - set(documents_downloaded))
+        documents_to_download = list(set(documents_to_download) - set(errors_downloaded))
 
     if randomize_download_order:
         random.shuffle(documents_to_download)
@@ -82,6 +86,10 @@ def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if
         elif log == "403":
             logger.error(f"{doc} failed to download. Error {log} (unauthorised document)")
             continue
+        elif log == "503":
+            logger.error(f"{doc} failed to download. Error {log} (Server temporarily down)")
+            time.sleep(600)
+            continue
         else:
             logger.error(f"{doc} failed to download. Error {log}")
             print(f"Download failed. Error {log}")
@@ -91,6 +99,6 @@ def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if
 if __name__ == "__main__":
     
     data_path = "data/document_data_clean.csv"
-    altcha_pass = '1772862876634.cf50ab1d.yx3cBSTkogrWy4N1JlSfZAVJrXLJ46KTLQP7UQvyQYs'
-    jsession_id = "3CE90735D6687D9AC95E24C5A8BF0604"
+    altcha_pass = '1773556923232.cf50ab1d.jnQ_gTC_puBCp0ybKooGKzJoqCHhJ4v0gsK2iiDbN9E'
+    jsession_id = "4C4E2898080CC0794907BCE605208EF6"
     full_gallica_download(data_path, altcha_pass, jsession_id, randomize_download_order=True, filter=True)

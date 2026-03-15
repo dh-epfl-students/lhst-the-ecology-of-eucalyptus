@@ -3,8 +3,12 @@ import re
 import spacy
 
 nlp = spacy.load('fr_core_news_sm')
-name_db = pd.read_csv("data/nat2022.csv", sep=";", encoding='utf-8')
+name_db = pd.read_csv("data/other/nat2022.csv", sep=";", encoding='utf-8')
 name_db = list(set(name_db["preusuel"].str.lower().to_list()))
+
+with open("data/other/presse_quotidienne.txt", encoding='utf-8') as f:
+    presse_quotidienne = f.readlines()
+    presse_quotidienne = list(set([presse.strip() for presse in presse_quotidienne]))
 
 def clean_date(unclean_date):
 
@@ -105,20 +109,47 @@ def clean_publisher(unclean_publisher):
 
     return pd.Series(publisher)
 
-def clean_type(unclean_type):
-    if unclean_type.strip() == "printed monograph":
-        return unclean_type.strip()
+def clean_type(unclean_type, title_clean):
+    #check for monographies
+    if unclean_type.strip() == "printed monograph" or unclean_type.strip() == "manuscrit" or unclean_type.strip() == "monographie imprimée":
+        return "monographie"
     
-    if unclean_type.strip() == "printed serial":
-        return unclean_type.strip()
+    #Return more precise information if printed serial based on title
+    #check for "annuaires":
+    if "annuaire" in title_clean.lower():
+        return "annuaire"
     
-    if unclean_type.strip() == "monographie imprimée":
-        return "printed monograph"
+    #Check for médical / specialised key words
+    specialized_word_list = ["médecin", "médic", "académie", "mycologique", "cosmos"]
+    for word in specialized_word_list:
+        if word.lower() in title_clean.lower():
+            return "presse scientifique"
     
-    if unclean_type.strip() == "manuscrit":
-        return "manuscript"
+    #check if in journal database
+    for presse in presse_quotidienne:
+        if presse.lower() in title_clean.lower():
+            return "presse quotidienne"
+    
+    #Check if "official" publication (from governments)
+    official_word_list = ["comité de madagascar", "actes administratifs", "budget", "procès-verbaux", "comité de l'afrique française", "comité de l'asie française", "régence", "république", "ministère", "chambre des députés", "préfecture", "gouvernement", "président", "assemblée", "officiel", "conseil général", "session", "projets de lois"]
+    for word in official_word_list:
+        if word.lower() in title_clean.lower():
+            return "presse officielle"
 
-def metadata_cleaner(path):
+    #Check for journal "Paris" without checking for every single title that has "Paris" on it:
+    if title_clean.lower() == "paris":
+        return "presse quotidienne"
+    
+    #check if title contains words typically associated with quotidien presse:
+    quotidien_word_list = ["politique", "théâtr", "prose", "almanach", "spirituel", "poète", "eglise", "express", "automobile", "jésus", "chemin" "missions", "paroiss", "dimanche", "chrét", "cathol", "annonce", "illustr", "élégan", "industri", "art moderne", "portefeuille", "évangélique", "syndic", "économie", "artist", "patri", "musical", "populaire", "sociali", "religi", "sport", "humoristique", "administration", "gazette", "judiciaire", "municipal", "dépêche", "colon", "républicain", "hebdomadaire", "quotidien", "démocratie"]
+    for word in quotidien_word_list:
+        if word.lower() in title_clean.lower():
+            return "presse quotidienne"
+    
+    #Default to presse scientifique if it does not check any other box
+    return "presse scientifique"
+
+def metadata_cleaner(path, filter=False):
     print("Reading csv ...")
     df = pd.read_csv(path)
     print("Loaded csv")
@@ -132,13 +163,21 @@ def metadata_cleaner(path):
     print("Authors cleaned\nCleaning publishers ...")
     df = pd.concat([df, df['publisher'].apply(clean_publisher)], axis=1)
     print("Publishers cleaned\nCleaning types ...")
-    df['type_clean'] = df['type'].apply(clean_type)
+    df['type_clean'] = df.apply(lambda x: clean_type(x["type"], x["title_clean"]), axis=1)
     print("Types cleaned\nSaving csv ...")
 
     df = df[['ark', 'title_clean', 'date_clean', 'author_name_clean', "author_type_clean", 'author_birth_clean', 'author_death_clean', "publisher_name_clean", "publisher_place_clean", "type_clean", "format", "description", "type", "source", "language", "title", "author", "date", "publisher"]]
-    df.to_csv("data/document_data_clean.csv", index=False)
-    print("csv saved")
+    if filter:
+        print("Removing unwanted documents ...")
+        df_author = df.dropna(subset = "author_type_clean")
+        df_publisher = df.dropna(subset = "publisher_name_clean")
+        df = pd.concat([df_author,df_publisher]).drop_duplicates().reset_index(drop=True)
+        print("Removed unwanted documents")
+        df.to_csv("data/document_data_clean_filtered.csv", index=False)
+    else:
+        df.to_csv("data/document_data_clean.csv", index=False)
+    print("csv file saved")
 
 if __name__ == "__main__":
     path = "data/document_data.csv"
-    metadata_cleaner(path)
+    metadata_cleaner(path, filter=True)
