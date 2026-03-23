@@ -1,6 +1,11 @@
 from bs4 import BeautifulSoup
 import re
+import pandas as pd
 import os
+from utils import safe_cast
+
+list_2_char_words = ["au", "ce", "ca", "ci", "de", "du", "en", "et", "eu", "ex", "il", "in", "la", "le", "me", "ne", "ni", "nu", "oc", "or", "on", "sa", "ta", "si", "te", "tu", "un", "us", "ut", "va", "vs", "vu"] 
+
 
 def count_special_char(string):
     spec_char_counter = 0
@@ -9,8 +14,8 @@ def count_special_char(string):
             spec_char_counter += 1
     return spec_char_counter
 
-def clean_text(path, eucalyptus_only=False):
-    with open(path, "r", encoding="utf-8") as f:
+def clean_text(ark, eucalyptus_only=False, write_ocr=False):
+    with open(f"data/documents/{ark}.html", "r", encoding="utf-8") as f:
         xml_file = BeautifulSoup(f, "lxml")
     
     #Parse through xml file. Keep only text after a certain "flag" (hr). Keep paragraph structure
@@ -33,7 +38,6 @@ def clean_text(path, eucalyptus_only=False):
 
     #"Old" OCR Postprocessing
     threshold = 0.25
-    list_2_char_words = ["au", "ce", "ca", "ci", "de", "du", "en", "et", "eu", "ex", "il", "in", "la", "le", "me", "ne", "ni", "nu", "oc", "or", "on", "sa", "ta", "si", "te", "tu", "un", "us", "ut", "va", "vs", "vu"] 
     for paragraph in full_text[:]:
         #TODO: find the context better
         if eucalyptus_only == True and "eucalypt" not in paragraph.lower():
@@ -50,22 +54,49 @@ def clean_text(path, eucalyptus_only=False):
             full_text.remove(paragraph)
             continue
 
-    full_text = "\n\n".join(full_text)
+    full_text = "\n".join(full_text)
 
     if eucalyptus_only:
-        with open(f"data/corpus_eucalyptus_only/{document[:-5]}.txt", "w", encoding="utf-8") as f:
+        with open(f"data/corpus_eucalyptus_only/{ark}.txt", "w", encoding="utf-8") as f:
             f.write(full_text)
     else:
-        with open(f"data/corpus_txt/{document[:-5]}.txt", "w", encoding="utf-8") as f:
+        with open(f"data/corpus_txt/{ark}.txt", "w", encoding="utf-8") as f:
             f.write(full_text)
 
 
     # Get gallica's OCR estimation
-    """ full_text = xml_file.get_text()
-    ocr_estimation = full_text.split('%.', 1)[0][-2:] """
+    if write_ocr:
+        df_filtered = pd.read_csv("data/document_data_clean_filtered.csv", encoding='utf-8')
+
+        full_text = xml_file.get_text()
+        ocr_estimation = full_text.split('%.', 1)[0][-3:].strip()
+        
+
+        #TODO handle case where it is not in the list
+        if document in df_filtered["ark"].to_list():
+            df_filtered.loc[df_filtered['ark'] == ark, "ocr_quality"] = safe_cast(ocr_estimation, int)
+
+        df_filtered.to_csv("data/document_data_clean_filtered.csv", encoding='utf-8', index=False)
+
 
 if __name__ == "__main__":
 
     documents_downloaded = os.listdir("data/documents")
-    for document in documents_downloaded:
-        clean_text(f"data/documents/{document}", eucalyptus_only=True)
+    documents_downloaded = [x.split(".")[0] for x in documents_downloaded]
+    print(f"Documents downloaded: {len(documents_downloaded)}")
+
+    documents_cleaned = os.listdir("data/corpus_txt")
+    documents_cleaned = [x.split(".")[0] for x in documents_cleaned]
+    print(f"Documents cleaned: {len(documents_cleaned)}")
+
+    documents_to_download = list(set(documents_downloaded) - set(documents_cleaned))
+    print(f"Documents to clean: {len(documents_to_download)}")
+
+    counter = len(documents_cleaned)
+    for document in documents_to_download:
+        clean_text(document, write_ocr=True)
+        counter += 1
+        
+        if counter % 50 == 0:
+            print(f"{counter} documents have been cleaned.")
+

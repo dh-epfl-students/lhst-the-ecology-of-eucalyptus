@@ -206,6 +206,8 @@ Bulletin de l'Association des commis des Ponts-et-chaussées
 Revue de l'Association générale automobile
 La France de demain
 Le Maître de maison
+Les Échos d'Hyères
+Le Courrier de Saint-Pierre
 L'Auvergnat de Paris
 La Grande revue
 La Vie future
@@ -220,6 +222,10 @@ Mercure de France
 Nos lectures
 La Chronique
 Revue indochinoise
+La Vie heureuse
+Le Progrès
+L'Écho des vallées
+Le Petit courrier
 Fillette
 Paris pour tous
 La Frontière
@@ -289,3 +295,45 @@ Union scolaire
 La République de Seine-et-Marne
 Le Sémaphore de l'Ouest
 Le Travailleur
+Akhbar
+Les Antilles
+Jules Brisson
+Le Charivari
+Comic-Finance
+Le Constitutionnel
+Le Corsaire
+Le Drôlatique
+L'Écho de l'Aveyron
+L'Électeur libre
+L'Époque
+Galignani's Messenger
+Le Gaulois
+La Guienne
+Journal des débats
+Le Monde pour rire
+Le Moniteur de la Martinique
+Panthéon Nadar
+La Patrie
+Le Philosophe
+Revue historique de droit français et étranger
+La Rue
+Le Siècle
+La Situation
+Le Soir
+Le Tintamarre
+L'Accusateur public
+Les Actes des Apôtres
+L'Ami des citoyens
+L'Ami des lois
+L'Ami des Théophilanthropes
+L'Ami du peuple
+L'Ami du peuple par Leclerc
+L'Ami du roi
+Les Annales patriotiques et littéraires
+Annales politiques
+L'Anti-Fédéraliste
+L'Apocalypse
+L'Angus patriote
+La Bouche de fer
+Le Chien et le Chat
+La Chronique de Paris

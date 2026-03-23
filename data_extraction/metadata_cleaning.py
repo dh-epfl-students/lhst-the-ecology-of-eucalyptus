@@ -1,12 +1,13 @@
 import pandas as pd
 import re
 import spacy
+import numpy as np
 
 nlp = spacy.load('fr_core_news_sm')
 name_db = pd.read_csv("data/other/nat2022.csv", sep=";", encoding='utf-8')
 name_db = list(set(name_db["preusuel"].str.lower().to_list()))
 
-with open("data/other/presse_quotidienne.txt", encoding='utf-8') as f:
+with open("data/other/presse_generaliste.txt", encoding='utf-8') as f:
     presse_quotidienne = f.readlines()
     presse_quotidienne = list(set([presse.strip() for presse in presse_quotidienne]))
 
@@ -109,45 +110,45 @@ def clean_publisher(unclean_publisher):
 
     return pd.Series(publisher)
 
-def clean_type(unclean_type, title_clean):
+def clean_type(unclean_type, title):
     #check for monographies
     if unclean_type.strip() == "printed monograph" or unclean_type.strip() == "manuscrit" or unclean_type.strip() == "monographie imprimée":
         return "monographie"
     
     #Return more precise information if printed serial based on title
     #check for "annuaires":
-    if "annuaire" in title_clean.lower():
+    if "annuaire" in title.lower():
         return "annuaire"
     
     #Check for médical / specialised key words
     specialized_word_list = ["médecin", "médic", "académie", "mycologique", "cosmos"]
     for word in specialized_word_list:
-        if word.lower() in title_clean.lower():
-            return "presse scientifique"
+        if word.lower() in title.lower():
+            return "presse spécialisée"
     
     #check if in journal database
     for presse in presse_quotidienne:
-        if presse.lower() in title_clean.lower():
-            return "presse quotidienne"
+        if presse.lower() in title.lower():
+            return "presse généraliste"
     
     #Check if "official" publication (from governments)
     official_word_list = ["comité de madagascar", "actes administratifs", "budget", "procès-verbaux", "comité de l'afrique française", "comité de l'asie française", "régence", "république", "ministère", "chambre des députés", "préfecture", "gouvernement", "président", "assemblée", "officiel", "conseil général", "session", "projets de lois"]
     for word in official_word_list:
-        if word.lower() in title_clean.lower():
+        if word.lower() in title.lower():
             return "presse officielle"
 
     #Check for journal "Paris" without checking for every single title that has "Paris" on it:
-    if title_clean.lower() == "paris":
-        return "presse quotidienne"
+    if title.lower() == "paris":
+        return "presse généraliste"
     
     #check if title contains words typically associated with quotidien presse:
     quotidien_word_list = ["politique", "théâtr", "prose", "almanach", "spirituel", "poète", "eglise", "express", "automobile", "jésus", "chemin" "missions", "paroiss", "dimanche", "chrét", "cathol", "annonce", "illustr", "élégan", "industri", "art moderne", "portefeuille", "évangélique", "syndic", "économie", "artist", "patri", "musical", "populaire", "sociali", "religi", "sport", "humoristique", "administration", "gazette", "judiciaire", "municipal", "dépêche", "colon", "républicain", "hebdomadaire", "quotidien", "démocratie"]
     for word in quotidien_word_list:
-        if word.lower() in title_clean.lower():
-            return "presse quotidienne"
+        if word.lower() in title.lower():
+            return "presse généraliste"
     
     #Default to presse scientifique if it does not check any other box
-    return "presse scientifique"
+    return "presse spécialisée"
 
 def metadata_cleaner(path, filter=False):
     print("Reading csv ...")
@@ -163,10 +164,12 @@ def metadata_cleaner(path, filter=False):
     print("Authors cleaned\nCleaning publishers ...")
     df = pd.concat([df, df['publisher'].apply(clean_publisher)], axis=1)
     print("Publishers cleaned\nCleaning types ...")
-    df['type_clean'] = df.apply(lambda x: clean_type(x["type"], x["title_clean"]), axis=1)
+    df['type_clean'] = df.apply(lambda x: clean_type(x["type"], x["title"]), axis=1)
     print("Types cleaned\nSaving csv ...")
 
-    df = df[['ark', 'title_clean', 'date_clean', 'author_name_clean', "author_type_clean", 'author_birth_clean', 'author_death_clean', "publisher_name_clean", "publisher_place_clean", "type_clean", "format", "description", "type", "source", "language", "title", "author", "date", "publisher"]]
+    df["ocr_quality"] = np.nan
+
+    df = df[['ark', 'title_clean', 'date_clean', 'author_name_clean', "author_type_clean", 'author_birth_clean', 'author_death_clean', "publisher_name_clean", "publisher_place_clean", "type_clean", "format", "description", "type", "source", "language", "title", "author", "date", "publisher", "ocr_quality"]]
     if filter:
         print("Removing unwanted documents ...")
         df_author = df.dropna(subset = "author_type_clean")
