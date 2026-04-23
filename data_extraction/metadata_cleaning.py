@@ -150,7 +150,7 @@ def clean_type(unclean_type, title):
     #Default to presse scientifique if it does not check any other box
     return "presse spécialisée"
 
-def metadata_cleaner(path, filter=False):
+def metadata_cleaner(path, filter=False, save_path="data/document_data_clean.csv"):
     print("Reading csv ...")
     df = pd.read_csv(path)
     print("Loaded csv")
@@ -176,11 +176,11 @@ def metadata_cleaner(path, filter=False):
         df_publisher = df.dropna(subset = "publisher_name_clean")
         df = pd.concat([df_author,df_publisher]).drop_duplicates().reset_index(drop=True)
         print("Removed unwanted documents")
-        df.to_csv("data/document_data_clean_filtered.csv", index=False)
+        df.to_csv(save_path[:-4] + "_filtered.csv", index=False)
     else:
-        df.to_csv("data/document_data_clean.csv", index=False)
-    print("csv file saved")
+        df.to_csv(save_path, index=False)
+    print("csv file saved as " + save_path)
 
 if __name__ == "__main__":
-    path = "data/document_data.csv"
-    metadata_cleaner(path, filter=True)
+    path = "data/missed_data.csv"
+    metadata_cleaner(path, filter=True, save_path=path)

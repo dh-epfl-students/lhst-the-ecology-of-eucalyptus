@@ -33,6 +33,13 @@ def single_search_gallica(query, startRecord, maximumRecord=50):
 
     soup = BeautifulSoup(response.content, "lxml")
 
+    #check if search is good:
+    #TODO: test exception
+    try: 
+        tot_records = soup.find("srw:numberofrecords").text
+    except:
+        raise(Exception(f"Bad xml answer at startRecord {startRecord}"))
+
 
     if not os.path.exists("data/tmp"):
         os.makedirs("data/tmp")
@@ -84,7 +91,7 @@ def full_search_gallica(query, startRecord=1, max_queries=-1, keep_xml=False, ke
         shutil.rmtree("data/tmp")
 
 
-def result_parser(xml_result, overwrite=False):
+def result_parser(xml_result, save_path="data/document_data.csv", overwrite=False):
     """
     Input: xml file produced by a gallica search
 
@@ -148,12 +155,12 @@ def result_parser(xml_result, overwrite=False):
     if overwrite:
         df = pd.DataFrame(books_parsed)
     else:
-        old_df = pd.read_csv("data/document_data.csv")
+        old_df = pd.read_csv(save_path)
         new_df = pd.DataFrame(books_parsed)
         df = pd.concat([old_df, new_df], axis=0)
 
     # Saving to CSV
-    df.to_csv('data/document_data.csv', index=False)
+    df.to_csv(save_path, index=False)
 
 
 if __name__ == "__main__":

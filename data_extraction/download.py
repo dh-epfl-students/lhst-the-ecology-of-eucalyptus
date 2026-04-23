@@ -20,7 +20,7 @@ def single_gallica_download(ark_id, altcha_pass, jsession_id):
     }
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0',
     }
 
     response = requests.get(f'https://gallica.bnf.fr/ark:/12148/{ark_id}.texteBrut', cookies=cookies, headers=headers)
@@ -94,11 +94,14 @@ def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if
             logger.error(f"{doc} failed to download. Error {log}")
             print(f"Download failed. Error {log}")
             break
+    
+    print("All documents have been downloaded")
+    logger.info(f"All documents have been downloaded")
 
 
 if __name__ == "__main__":
     
-    data_path = "data/document_data_clean.csv"
-    altcha_pass = '1773556923232.cf50ab1d.jnQ_gTC_puBCp0ybKooGKzJoqCHhJ4v0gsK2iiDbN9E'
-    jsession_id = "4C4E2898080CC0794907BCE605208EF6"
+    data_path = "data/document_data_clean_filtered.csv"
+    altcha_pass = '1776569303509.4d286adf.ZIGRL5nMwajKas1YM8-Z05Pj3baDTBcDoe2E0s66pT8'
+    jsession_id = "F4792277C4E45A1EC6409B4D8E93ABBF"
     full_gallica_download(data_path, altcha_pass, jsession_id, randomize_download_order=True, filter=True)
