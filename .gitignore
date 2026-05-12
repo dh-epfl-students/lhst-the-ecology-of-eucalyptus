@@ -3,7 +3,13 @@ data/error/*
 data/tmp/*
 data/corpus_txt/*
 data/corpus_eucalyptus_only/*
+data/corpus_eucalyptus_only_bigger_context/*
 .venv
 *.log
 *.csv
 __pycache__
+data/other/codes-postaux-localites-2018.xlsx
+analysis/topic_model.pkl
+analysis/test_network.gexf
+analysis/less_outliers.pkl
+analysis/extracted_docs_list.pkl

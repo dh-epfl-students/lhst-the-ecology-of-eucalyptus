@@ -30,11 +30,6 @@ def clean_text(ark, eucalyptus_only=False, write_ocr=False):
         if child.name == "hr" and keep_text == False:
             keep_text = True
 
-    """ #TODO: remove (vérif)
-    with open(f"data/corpus_txt/{document[:-5]}_pre.txt", "w", encoding="utf-8") as f:
-        testtext = "\n\n".join(full_text)
-        f.write(testtext) """
-
 
     #"Old" OCR Postprocessing
     threshold = 0.25
