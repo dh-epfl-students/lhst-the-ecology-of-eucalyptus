@@ -1,7 +1,13 @@
+import itertools
+import pandas as pd
+import matplotlib.pyplot as plt
+from rapidfuzz import fuzz
+from nltk import tokenize
+from scipy.stats import chi2_contingency
+from wordcloud import WordCloud
+
 
 def import_text(ark, context, size=50, separated_contexts=True):
-    from rapidfuzz import fuzz
-    from nltk import tokenize
     #Keep only paragraphs with "eucalyptus" in them
     if context == "paragraph":
         with open(f"../data/corpus_txt/{ark}.txt", "r", encoding='utf-8') as f:
@@ -74,11 +80,7 @@ def import_text(ark, context, size=50, separated_contexts=True):
         raise ValueError('context must be either "paragraph", "context_window" or "sentence"')
     
 
-def plot_histogram(df, x, y, weights="document", normalize=False, columns_to_remove=False, column_order=False, row_order = False):
-    import itertools
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    from scipy.stats import chi2_contingency
+def plot_histogram(df, x, y, weights="document", normalize=False, columns_to_remove=False, column_order=False, row_order=False, print_p_value=False):
     if weights == "document":
         #Create dict with all possible metadata types and with a list with the topics length
         cross_tab = dict()
@@ -117,8 +119,8 @@ def plot_histogram(df, x, y, weights="document", normalize=False, columns_to_rem
 
         ax = cross_tab.plot(kind='bar', stacked=True, rot=0)
         ax.legend(title=y, bbox_to_anchor=(1, 1.02), loc='upper left')
-        plt.xticks(rotation=60)
         plt.title(f"Distribution of {y} based on {x} - Weighted by documents")
+        plt.xticks(rotation=60)
         plt.show()
         
     elif weights == "context":
@@ -155,20 +157,32 @@ def plot_histogram(df, x, y, weights="document", normalize=False, columns_to_rem
         return
     
 
-    # return chi-square test between each distribution:
-    # test chi-2:
-    data = [i for i, row in cross_tab.iterrows()]
-    for combination in itertools.combinations(data, 2):
-        first_row = cross_tab.loc[combination[0]]
-        second_row = cross_tab.loc[combination[1]]
-        stat, p, dof, expected = chi2_contingency([first_row.to_list(), second_row.to_list()])
+    if print_p_value:
+        # return chi-square test between each distribution:
+        # test chi-2:
+        data = [i for i, row in cross_tab.iterrows()]
+        for combination in itertools.combinations(data, 2):
+            first_row = cross_tab.loc[combination[0]]
+            second_row = cross_tab.loc[combination[1]]
+            stat, p, dof, expected = chi2_contingency([first_row.to_list(), second_row.to_list()])
 
-        # interpret p-value
-        alpha = 0.05
-        print(f"________________")
-        print(f"comparision between: {combination[0]} and {combination[1]}")
-        print("p value is " + str(p))
-        if p <= alpha:
-            print('Dependent (reject H0)')
-        else:
-            print('Independent (H0 holds true)')
+            # interpret p-value
+            alpha = 0.05
+            print(f"________________")
+            print(f"comparision between: {combination[0]} and {combination[1]}")
+            print("p value is " + str(p))
+            if p <= alpha:
+                print('Dependent (reject H0)')
+            else:
+                print('Independent (H0 holds true)')
+
+
+def plot_word_cloud(topic, topic_model):
+    text = {word: value for word, value in topic_model.get_topic(topic)}
+    wc = WordCloud(background_color="white", max_words=1000)
+    wc.generate_from_frequencies(text)
+    plt.imshow(wc, interpolation="bilinear")
+    plt.axis("off")
+    plt.title(f"Word cloud for Topic {topic}")
+
+    plt.show()

@@ -142,7 +142,7 @@ def clean_type(unclean_type, title):
         return "presse généraliste"
     
     #check if title contains words typically associated with quotidien presse:
-    quotidien_word_list = ["politique", "théâtr", "prose", "almanach", "spirituel", "poète", "eglise", "express", "automobile", "jésus", "chemin" "missions", "paroiss", "dimanche", "chrét", "cathol", "annonce", "illustr", "élégan", "industri", "art moderne", "portefeuille", "évangélique", "syndic", "économie", "artist", "patri", "musical", "populaire", "sociali", "religi", "sport", "humoristique", "administration", "gazette", "judiciaire", "municipal", "dépêche", "colon", "républicain", "hebdomadaire", "quotidien", "démocratie"]
+    quotidien_word_list = ["politique", "théâtr", "prose", "almanach", "spirituel", "poète", "eglise", "express", "automobile", "jésus", "chemin", "missions", "paroiss", "dimanche", "chrét", "cathol", "annonce", "illustr", "élégan", "industri", "art moderne", "portefeuille", "évangélique", "syndic", "économie", "artist", "patri", "musical", "populaire", "sociali", "religi", "sport", "humoristique", "administration", "gazette", "judiciaire", "municipal", "dépêche", "colon", "républicain", "hebdomadaire", "quotidien", "démocratie"]
     for word in quotidien_word_list:
         if word.lower() in title.lower():
             return "presse généraliste"
