@@ -11,7 +11,6 @@ logging.basicConfig(filename='data_extraction/download.log', encoding='utf-8', l
                     format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p')
 
 
-
 def single_gallica_download(ark_id, altcha_pass, jsession_id):
 
     cookies = {
@@ -44,16 +43,9 @@ def single_gallica_download(ark_id, altcha_pass, jsession_id):
     return "Safe"
 
 
-def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if_downloaded=True, randomize_download_order=False, filter=False, time_to_wait=15):
+def full_gallica_download(document_data_path, altcha_pass, jsession_id, check_if_downloaded=True, randomize_download_order=False, time_to_wait=15):
 
     df_documents = pd.read_csv(document_data_path)
-
-    #remove documents based on filter
-    if filter:
-        df_author = df_documents.dropna(subset = "author_type_clean")
-        df_publisher = df_documents.dropna(subset = "publisher_name_clean")
-        df_documents = pd.concat([df_author,df_publisher]).drop_duplicates().reset_index(drop=True)
-
     
     documents_to_download = df_documents["ark"].to_list()
 
@@ -104,4 +96,4 @@ if __name__ == "__main__":
     data_path = "data/document_data_clean_filtered.csv"
     altcha_pass = '1776569303509.4d286adf.ZIGRL5nMwajKas1YM8-Z05Pj3baDTBcDoe2E0s66pT8'
     jsession_id = "F4792277C4E45A1EC6409B4D8E93ABBF"
-    full_gallica_download(data_path, altcha_pass, jsession_id, randomize_download_order=True, filter=True)
+    full_gallica_download(data_path, altcha_pass, jsession_id, randomize_download_order=True)

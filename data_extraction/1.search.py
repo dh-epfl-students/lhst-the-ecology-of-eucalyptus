@@ -33,8 +33,7 @@ def single_search_gallica(query, startRecord, maximumRecord=50):
 
     soup = BeautifulSoup(response.content, "lxml")
 
-    #check if search is good:
-    #TODO: test exception
+    #check if the xml returned works. If not stops the search and outputs the current startRecord:
     try: 
         tot_records = soup.find("srw:numberofrecords").text
     except:
@@ -52,7 +51,8 @@ def single_search_gallica(query, startRecord, maximumRecord=50):
 
 def full_search_gallica(query, startRecord=1, max_queries=-1, keep_xml=False, keep_previous_data=True):
     """
-    Input: CQL query, max_queries
+    Input: CQL query, startRecord (start "page" of the search), max_queries, keep_xml (keep the returned xml file)
+    keep_previous_data (delete previous xml files)
 
     Loops through all documents and calls "single_search_gallica" and "result_parser" to create a csv file with all relevant 
     documents
@@ -95,7 +95,7 @@ def result_parser(xml_result, save_path="data/document_data.csv", overwrite=Fals
     """
     Input: xml file produced by a gallica search
 
-    Output: csv file with each book as its own line
+    Output: csv file with each document as its own line
     """
     books = xml_result.find_all('srw:record')
     books_parsed = []
@@ -167,4 +167,4 @@ if __name__ == "__main__":
 
     query = 'gallica all "Eucalyptus" and dc.date <= "1920" and dc.type any "monographie fascicule manuscrit" and dc.language any "fre frd" sortby dc.date/sort.ascending'
 
-    full_search_gallica(query, startRecord=27051, keep_xml=True)
+    full_search_gallica(query, keep_xml=True)

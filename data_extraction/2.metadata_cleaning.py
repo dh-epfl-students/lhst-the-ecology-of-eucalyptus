@@ -22,14 +22,7 @@ def clean_date(unclean_date):
     else:
         return m[0]
 
-"""
-TODO
 
-Examples of failed titles:
-- Le Figaro. Supplément littéraire du dimanche
-- Tunis-journal. Journal politique, littéraire, scientifique, agricole et commercial. Organe des intérêts français en Tunisie...
-- Dictionnaire encyclopédique des sciences médicales. Quatrième série, F-K. Tome cinquième, FRAN-FRAN
-"""
 def clean_title(unclean_title):
     cleaner_title = unclean_title.split(" / ")[0]
     cleaner_title = cleaner_title.split(" [")[0]
@@ -175,6 +168,7 @@ def metadata_cleaner(path, filter=False, save_path="data/document_data_clean.csv
         df_author = df.dropna(subset = "author_type_clean")
         df_publisher = df.dropna(subset = "publisher_name_clean")
         df = pd.concat([df_author,df_publisher]).drop_duplicates().reset_index(drop=True)
+        df = df.dropna(subset="date_clean")
         print("Removed unwanted documents")
         df.to_csv(save_path[:-4] + "_filtered.csv", index=False)
     else:
@@ -184,4 +178,4 @@ def metadata_cleaner(path, filter=False, save_path="data/document_data_clean.csv
 if __name__ == "__main__":
     path = "data/document_data.csv"
     save_path = "data/document_data_clean.csv"
-    metadata_cleaner(path, filter=False, save_path=path)
+    metadata_cleaner(path, filter=True, save_path=save_path)
