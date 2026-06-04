@@ -182,5 +182,6 @@ def metadata_cleaner(path, filter=False, save_path="data/document_data_clean.csv
     print("csv file saved as " + save_path)
 
 if __name__ == "__main__":
-    path = "data/missed_data.csv"
-    metadata_cleaner(path, filter=True, save_path=path)
+    path = "data/document_data.csv"
+    save_path = "data/document_data_clean.csv"
+    metadata_cleaner(path, filter=False, save_path=path)

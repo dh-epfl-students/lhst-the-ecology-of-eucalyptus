@@ -14,3 +14,4 @@ analysis/test_network.gexf
 analysis/less_outliers.pkl
 analysis/extracted_docs_list.pkl
 /analysis/saved_variables
+/analysis/word_clouds
