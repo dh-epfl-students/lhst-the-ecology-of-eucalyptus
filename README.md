@@ -18,7 +18,7 @@ We downloaded a total of 17'191 documents with at least one mention of "eucalypt
 
 All required packages can be found in `requirements.txt`.
 
-For size and privacy reasons, the full txt documents will not be published on Github, possibly rendering some scripts unusable. Please contact me (andre.dagloriasantiago@epfl.ch) if you want to have access to the full data.
+For size and privacy reasons, both the full txt documents and the topic_model file will not be published on Github, possibly rendering some scripts unusable. Please contact me (andre.dagloriasantiago@epfl.ch) if you want to have access to the full data.
 
 The scripts used to download the corpus using Gallica's API can be found in the `data-extraction` folder. The corpus has already been formed, so there should not be any necessity to run most of these files.  
 1) `1.search.py` should be run first to create the full corpus, with each document metadata and id (ark). 
