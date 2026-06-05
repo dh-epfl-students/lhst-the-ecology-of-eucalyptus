@@ -37,3 +37,6 @@ The scripts used to download the corpus using Gallica's API can be found in the 
 `report_figures.ipynb` is the file that created every figure and statistic used in the final report.
 
 
+The ecology of Eucalyptus - André da Glória Santiago
+Copyright (c) 2026 André da Glória Santiago / EPFL
+This program is licensed under the terms of the [MIT](license) licence.
