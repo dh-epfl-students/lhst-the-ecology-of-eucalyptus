@@ -1,0 +1,56 @@
+\documentclass[11pt,titlepage]{report}
+\usepackage{Preamble}
+\usepackage[toc]{appendix}
+\usepackage{pgffor}
+\usepackage{filecontents}
+
+%\usepackage{subfig}
+
+\begin{document}
+
+\begin{titlepage}
+    \newgeometry{margin=3cm}
+	\centering
+    \includegraphics[width=0.5\linewidth]{epfl.png}\\[0.25cm] 	% University Logo
+    \textsc{\LARGE École Polytechnique Fédérale de Lausanne}\\ \vspace{\fill}
+    \textbf{\textsc{\fontsize{50}{50}\selectfont The Ecology of Eucalyptus}}\\ \vspace{\fill}		
+	\textsc{\LARGE André da Glória Santiago}\\[0.4cm]
+	\rule{\linewidth}{0.2 mm} \\[0.5 cm]
+	 Supervised by : Elisabeth Davin-Mortier and Jérôme Baudry\\[2cm] \today
+\end{titlepage}
+\restoregeometry
+
+\thispagestyle{numberonly}
+\begin{summary}
+\section*{Abstract}
+
+This project aims to do a corpus analysis of the discourse around eucalyptus within the French-speaking world. The goal is to perform an exploratory analysis of the field, and understand who are the actors and how do they shape the discourse. To do so, we downloaded a corpus of 17'191 total documents spanning from 1783 to 1920 to which we applied a topic model. Based on the analysis performed on the documents' metadata and the results of the topic modeling, we then focused on three main case studies: the documents published in Lyon and their links with advertisements, the documents published in Madagascar and their ties with the French colonial administration and finally an analysis on the topic of drainage of the soil and the fight against malaria. This methodology offers a new way to explore the social and political ramifications of the eucalyptus tree, as well as identifying new potential cases for more in-depth qualitative research.
+\end{summary}
+
+\chapter{Introduction}
+\subfile{1-Introduction}
+
+\chapter{Methods}
+\subfile{2-Methods}
+
+\chapter{Results}
+\subfile{3-Results}
+
+\chapter{Discussion}
+\subfile{4-Discussion}
+
+\chapter{Conclusion}
+\subfile{5-Conclusion}
+
+\clearpage
+\pagestyle{numberonly}
+\printbibliography
+
+\begin{appendices}
+\chapter{Topics}
+\label{app:topics}
+\subfile{Appendix}
+
+\end{appendices}
+
+\end{document}
