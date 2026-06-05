@@ -39,4 +39,4 @@ The scripts used to download the corpus using Gallica's API can be found in the 
 
 The ecology of Eucalyptus - André da Glória Santiago<br>
 Copyright (c) 2026 André da Glória Santiago / EPFL<br>
-This program is licensed under the terms of the [MIT](license) licence.
+This program is licensed under the terms of the [MIT](https://mit-license.org/) licence.
