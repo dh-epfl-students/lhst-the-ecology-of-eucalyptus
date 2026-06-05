@@ -11,7 +11,7 @@ tree, as well as identifying new potential cases for more in-depth qualitative r
 
 # Research Summary
 
-We downloaded a total of 17'191 documents with at least one mention of "eucalyptus" from the [Gallica](https://gallica.bnf.fr/accueil/fr/html/accueil-fr) database. We then applied topic modeling technics using BERTopic, to find 136 different topics within the documents. The topic and metadata analysis showed that there is a clear difference in the discourse around the plant based on the typology of documents, but most importantly based on their place of publication. We see a clear difference in the way the discourse is shaped between mainland France and its colonies, with the latter being mostly linked to Institutional topics, rather than more scientific or "casual" ones. 
+We downloaded a total of 17'191 documents with at least one mention of "eucalyptus" from the [Gallica](https://gallica.bnf.fr/accueil/fr/html/accueil-fr) database. We then applied topic modeling technics using BERTopic, to find 136 different topics within the documents. The topic and metadata analysis showed that there is a clear difference in the discourse around the plant based on the typology of documents, but most importantly based on their place of publication. We see a clear difference in the way the discourse is shaped between mainland France and its colonies, with the first being linked with scientific topics and publicity, while the latter being mostly linked to institutional ones. 
 
 
 # Installation and Usage
